@@ -1,18 +1,13 @@
 import sqlite3
 from typing import Optional
 
-from repositories.category_repository import CategoryRepository
 from repositories.product_repository import ProductRepository
 from services.add_to_cart_service import AddToCartService
 
+
 conn = sqlite3.connect('shop.db')
 product_repo = ProductRepository(conn)
-category_repo = CategoryRepository(conn)
 add_to_cart_service = AddToCartService(conn)
-
-
-def get_products_by_category(category_name):
-    return product_repo.get_products_by_category(category_name)
 
 
 def show_products(category_id: int, user_id: Optional[int] = None):
@@ -54,12 +49,3 @@ def show_products(category_id: int, user_id: Optional[int] = None):
             exit_choice = input("Введите 'E' для выхода назад: ")
             if exit_choice.lower() == 'e':
                 break
-
-
-def get_category_menu() -> None:
-    categories = category_repo.get_all_categories()
-
-    print("\nВыберите категорию товаров:")
-    for index, category in enumerate(categories, start=1):
-        print(f"{index}. {category[1]}")
-    print("E. Выйти в главное меню")

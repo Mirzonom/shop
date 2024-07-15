@@ -1,7 +1,7 @@
 from enum import Enum
 import sqlite3
 
-from get_catalog_user import get_catalog_user
+from catalogs.get_catalog_user import get_catalog_user
 from services.view_cart_service import ViewCartService
 from services.checkout_service import CheckoutService
 from services.purchase_history_service import PurchaseHistoryService

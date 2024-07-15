@@ -1,5 +1,5 @@
 from database import initialize_database
-from get_catalog_guest import get_catalog_quest
+from catalogs.get_catalog_guest import get_catalog_quest
 from menu.display_menu import MainChoice, show_main_menu
 from user.user_auth import register_user, login_user
 from user.user_actions import handle_user_actions

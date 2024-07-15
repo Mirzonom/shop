@@ -1,7 +1,8 @@
 import sqlite3
 from typing import List
 
-from product import show_products, get_category_menu
+from products.product_display import show_products
+from products.product_menu import get_category_menu
 from repositories.category_repository import CategoryRepository
 from repositories.product_repository import ProductRepository
 
