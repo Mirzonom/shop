@@ -20,7 +20,7 @@ def handle_user_actions(user_id: int) -> None:
         print("3. Оплата")
         print("4. История покупок")
         print("E. Выход из аккаунта")
-        action = input("Ваш выбор: ")
+        action = input("Ваш выбор: ").lower()
 
         if action == UserAction.VIEW_CATALOG.value:
             get_catalog_user(user_id)

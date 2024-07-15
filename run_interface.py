@@ -15,7 +15,10 @@ def run_interface():
         if choice == MainChoice.REGISTER.value:
             username: str = input("Введите имя пользователя: ")
             password: str = input("Введите пароль: ")
-            register_user(username, password)
+            user: tuple = register_user(username, password)
+            if user:
+                user_id: int = user[0]
+                handle_user_actions(user_id)
 
         elif choice == MainChoice.LOGIN.value:
             username: str = input("Введите имя пользователя: ")

@@ -15,13 +15,14 @@ def get_catalog_quest() -> None:
 
         get_category_menu()
 
-        category_choice: str = input("Ваш выбор: ")
+        category_choice: str = input("Ваш выбор: ").lower()
 
         if category_choice.isdigit():
             category_index: int = int(category_choice) - 1
             if 0 <= category_index < len(categories):
                 category_id: int = categories[category_index][0]
-                show_products(category_id)  # без user_id, так как это режим гостья
+                # без user_id, так как это режим гостья
+                show_products(category_id)
             else:
                 print("Некорректный выбор.")
         elif category_choice == 'e':

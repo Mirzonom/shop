@@ -8,11 +8,12 @@ conn = sqlite3.connect('shop.db')
 user_repo = UserRepository(conn)
 
 
-def register_user(username: str, password: str) -> None:
+def register_user(username: str, password: str) -> Optional[tuple]:
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
     try:
         user_repo.create_user(username, hashed_password)
         print("Регистрация успешна.")
+        return user_repo.find_by_username(username)
     except sqlite3.IntegrityError:
         print("Пользователь с таким именем уже существует.")
 

@@ -15,7 +15,7 @@ def get_catalog_user(user_id) -> None:
 
         get_category_menu()
 
-        category_choice: str = input("Ваш выбор: ")
+        category_choice: str = input("Ваш выбор: ").lower()
 
         if category_choice.isdigit():
             category_choice: int = int(category_choice)
