@@ -1,5 +1,17 @@
+from enum import Enum
 import sqlite3
 from typing import Optional, Tuple, List, Any
+
+
+class TransactionType(Enum):
+    Withdrawal = 0
+    Deposit = 1
+
+
+class SqlQueryReturnType(Enum):
+    FETCHALL = 'fetchall'
+    FETCHONE = 'fetchone'
+    LASTROWID = 'lastrowid'
 
 
 class UserRepository:
@@ -18,21 +30,21 @@ class UserRepository:
     def create_user(self, username: str, password: str) -> int:
         return sql_query(self.conn, '''
                         INSERT INTO users (username, password) VALUES (?, ?)
-                    ''', (username, password), return_type='lastrowid')
+                    ''', (username, password), return_type=SqlQueryReturnType.LASTROWID)
 
     def find_by_username(self, username: str) -> Optional[tuple]:
         return sql_query(self.conn, '''
                         SELECT * FROM users WHERE username = ?
-                    ''', (username,), return_type='fetchone')
+                    ''', (username,), return_type=SqlQueryReturnType.FETCHONE)
 
     def get_virtual_balance(self, user_id: int) -> float:
         transactions = sql_query(self.conn, "SELECT amount, type FROM money_transactions WHERE user_id = ?",
-                                 (user_id,), return_type='fetchall')
+                                 (user_id,), return_type=SqlQueryReturnType.FETCHALL)
         total_balance = 1000.0  # начальный баланс
         for amount, transaction_type in transactions:
-            if transaction_type == 0:  # списание
+            if transaction_type == TransactionType.Withdrawal:  # списание
                 total_balance -= amount
-            elif transaction_type == 1:  # зачисление
+            elif transaction_type == TransactionType.Deposit:  # зачисление
                 total_balance += amount
         return total_balance
 
@@ -94,15 +106,15 @@ class CategoryRepository:
     def create_category(self, name: str) -> int:
         return sql_query(self.conn, '''
             INSERT INTO categories (name) VALUES (?)
-            ''', (name,), return_type='lastrowid')
+            ''', (name,), return_type=SqlQueryReturnType.LASTROWID)
 
     def find_by_name(self, name: str) -> Optional[tuple]:
         return sql_query(self.conn, '''
                 SELECT * FROM categories WHERE name = ?
-                    ''', (name,), return_type='fetchone')
+                    ''', (name,), return_type=SqlQueryReturnType.FETCHONE)
 
     def get_all_categories(self) -> List[Tuple[int, str]]:
-        return sql_query(self.conn, 'SELECT id, name FROM categories', return_type='fetchall')
+        return sql_query(self.conn, 'SELECT id, name FROM categories', return_type=SqlQueryReturnType.FETCHALL)
 
 
 class ProductRepository:
@@ -124,17 +136,17 @@ class ProductRepository:
     def create_product(self, name: str, price: float, category_id: int, stock: int) -> int:
         return sql_query(self.conn, '''
             INSERT INTO products (name, price, category_id, stock) VALUES (?, ?, ?, ?)
-            ''', (name, price, category_id, stock), return_type='lastrowid')
+            ''', (name, price, category_id, stock), return_type=SqlQueryReturnType.LASTROWID)
 
     def find_by_id(self, product_id: int) -> Optional[tuple]:
         return sql_query(self.conn, '''
             SELECT * FROM products WHERE id = ?
-            ''', (product_id,), return_type='fetchone')
+            ''', (product_id,), return_type=SqlQueryReturnType.FETCHONE)
 
     def find_by_name(self, name: str) -> Optional[tuple]:
         return sql_query(self.conn, '''
             SELECT * FROM products WHERE name = ?
-        ''', (name,), return_type='fetchone')
+        ''', (name,), return_type=SqlQueryReturnType.FETCHONE)
 
     def get_products_by_category(self, category_name: str) -> List[Tuple[int, str, float, int]]:
         return sql_query(self.conn, '''
@@ -142,14 +154,14 @@ class ProductRepository:
                 FROM products
                 JOIN categories ON products.category_id = categories.id
                 WHERE categories.name = ? AND products.stock > 0
-            ''', (category_name,), return_type='fetchall')
+            ''', (category_name,), return_type=SqlQueryReturnType.FETCHALL)
 
     def get_products_by_category_id(self, category_id) -> List[Tuple[int, str, float, int]]:
         return sql_query(self.conn, '''
                 SELECT id, name, price, stock
                 FROM products
                 WHERE category_id = ? AND stock > 0
-            ''', (category_id,), return_type='fetchall')
+            ''', (category_id,), return_type=SqlQueryReturnType.FETCHALL)
 
     def update_stock(self, product_id: int, new_stock: int, transaction_type: int) -> None:
         sql_query(self.conn, '''
@@ -158,12 +170,13 @@ class ProductRepository:
 
     def get_virtual_product_quantity(self, product_id: int) -> int:
         transactions = sql_query(self.conn, "SELECT quantity, type FROM product_transactions WHERE product_id = ?",
-                                 (product_id,), return_type='fetchall')
-        total_quantity = self.find_by_id(product_id)[4]  # исходный stock из таблицы products
+                                 (product_id,), return_type=SqlQueryReturnType.FETCHALL)
+        # исходный stock из таблицы products
+        total_quantity = self.find_by_id(product_id)[4]
         for quantity, transaction_type in transactions:
-            if transaction_type == 0:  # списание
+            if transaction_type == TransactionType.Withdrawal:  # списание
                 total_quantity -= quantity
-            elif transaction_type == 1:  # зачисление
+            elif transaction_type == TransactionType.Deposit:  # зачисление
                 total_quantity += quantity
         return total_quantity
 
@@ -190,16 +203,16 @@ class OrderRepository:
     def create_order(self, user_id: int, product_id: int, quantity: int, total_price: float) -> int:
         return sql_query(self.conn, '''
             INSERT INTO orders (user_id, product_id, quantity, total_price) VALUES (?, ?, ?, ?)
-            ''', (user_id, product_id, quantity, total_price), return_type='lastrowid')
+            ''', (user_id, product_id, quantity, total_price), return_type=SqlQueryReturnType.LASTROWID)
 
     def find_by_user(self, user_id: int) -> list:
         return sql_query(self.conn, '''
             SELECT * FROM users WHERE id = ?
-            ''', (user_id,), return_type='fetchall')
+            ''', (user_id,), return_type=SqlQueryReturnType.FETCHALL)
 
     def check_my_orders_by_user_id(self, user_id: int) -> List[Tuple[int, str]]:
         return sql_query(self.conn, 'SELECT * FROM orders WHERE user_id=? AND status IS NULL',
-                         (user_id,), return_type='fetchall')
+                         (user_id,), return_type=SqlQueryReturnType.FETCHALL)
 
     def view_orders_from_cart(self, user_id: int) -> List[Tuple[str, int, float]]:
         return sql_query(self.conn, '''
@@ -207,7 +220,7 @@ class OrderRepository:
             FROM orders
             INNER JOIN products ON orders.product_id = products.id
             WHERE orders.user_id = ? AND orders.status IS NULL
-            ''', (user_id,), return_type='fetchall')
+            ''', (user_id,), return_type=SqlQueryReturnType.FETCHALL)
 
     def get_completed_orders(self, user_id: int) -> List[Tuple[str, int, float, str]]:
         return sql_query(self.conn, '''
@@ -215,10 +228,11 @@ class OrderRepository:
             FROM orders
             INNER JOIN products ON orders.product_id = products.id
             WHERE orders.user_id = ? AND orders.status = 'completed'
-            ''', (user_id,), return_type='fetchall')
+            ''', (user_id,), return_type=SqlQueryReturnType.FETCHALL)
 
     def update_status(self, order_id: int, status: str) -> None:
-        sql_query(self.conn, '''UPDATE orders SET status = ? WHERE id = ?''', (status, order_id))
+        sql_query(
+            self.conn, '''UPDATE orders SET status = ? WHERE id = ?''', (status, order_id))
 
     def delete_orders_with_null_status(self) -> None:
         sql_query(self.conn, '''DELETE FROM orders WHERE status IS NULL''')
@@ -295,13 +309,13 @@ def close_database(conn) -> None:
     conn.close()
 
 
-def sql_query(conn, query: str, params: tuple = (), return_type: str = 'lastrowid') -> Any:
+def sql_query(conn, query: str, params: tuple = (), return_type: str = SqlQueryReturnType.LASTROWID) -> Any:
     with conn:
         cursor = conn.cursor()
         cursor.execute(query, params)
 
-        if return_type == 'fetchall':
+        if return_type == SqlQueryReturnType.FETCHALL:
             return cursor.fetchall()
-        elif return_type == 'fetchone':
+        elif return_type == SqlQueryReturnType.FETCHONE:
             return cursor.fetchone()
         return cursor.lastrowid
