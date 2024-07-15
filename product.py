@@ -1,12 +1,14 @@
 import sqlite3
 from typing import Optional
 
-from cart import add_to_cart
-from database import ProductRepository, CategoryRepository
+from repositories.category_repository import CategoryRepository
+from repositories.product_repository import ProductRepository
+from services.add_to_cart_service import AddToCartService
 
 conn = sqlite3.connect('shop.db')
 product_repo = ProductRepository(conn)
 category_repo = CategoryRepository(conn)
+add_to_cart_service = AddToCartService(conn)
 
 
 def get_products_by_category(category_name):
@@ -31,7 +33,8 @@ def show_products(category_id: int, user_id: Optional[int] = None):
                     if 0 <= product_index < len(products):
                         product_id = products[product_index][0]
                         quantity = int(input("Введите количество: "))
-                        add_to_cart(user_id, product_id, quantity)
+                        add_to_cart_service.add_to_cart(
+                            user_id, product_id, quantity)
                     else:
                         print("Некорректное номер товара.")
             else:

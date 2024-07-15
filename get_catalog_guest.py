@@ -1,8 +1,9 @@
 import sqlite3
 from typing import List
 
-from database import ProductRepository, CategoryRepository
 from product import show_products, get_category_menu
+from repositories.category_repository import CategoryRepository
+from repositories.product_repository import ProductRepository
 
 conn = sqlite3.connect('shop.db')
 category_repo = CategoryRepository(conn)

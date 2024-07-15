@@ -1,7 +1,5 @@
 import sqlite3
-from typing import Any
 
-from enums.sql_query_return_type import SqlQueryReturnType
 from repositories.transaction_repository import TransactionRepository
 from repositories.user_repository import UserRepository
 from repositories.category_repository import CategoryRepository
@@ -32,7 +30,7 @@ def initialize_database() -> None:
         # for category in categories:
         #     if not category_repo.find_by_name(category):
         #         category_repo.create_category(category)
-        #
+
         # products = [
         #     ('Moleskine блокнот', 12.99, 1, 8),
         #     ('Leuchtturm1917 блокнот', 17.95, 1, 15),
@@ -65,7 +63,7 @@ def initialize_database() -> None:
         #     ('Faber-Castell ручка', 8.99, 2, 20),
         #     ('Pilot гелевая ручка', 4.59, 2, 6)
         # ]
-        #
+
         # for product in products:
         #     name, price, category_id, stock = product
         #     if not product_repo.find_by_name(name):
