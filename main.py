@@ -1,8 +1,8 @@
-from run_interface import run_interface
+from menu.interface import main_interface
 
 
 def main():
-    run_interface()
+    main_interface()
 
 
 if __name__ == "__main__":

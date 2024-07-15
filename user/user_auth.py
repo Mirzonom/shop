@@ -2,7 +2,8 @@ import hashlib
 import sqlite3
 from typing import Optional
 
-from database import UserRepository
+from repositories.user_repository import UserRepository
+
 
 conn = sqlite3.connect('shop.db')
 user_repo = UserRepository(conn)

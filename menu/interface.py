@@ -1,11 +1,11 @@
 from database import initialize_database
 from get_catalog_guest import get_catalog_quest
-from menu import MainChoice, show_main_menu
-from user import register_user, login_user
-from user_actions import handle_user_actions
+from menu.display_menu import MainChoice, show_main_menu
+from user.user_auth import register_user, login_user
+from user.user_actions import handle_user_actions
 
 
-def run_interface():
+def main_interface():
     initialize_database()
 
     print("Добро пожаловать в интернет-магазин")
