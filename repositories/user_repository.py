@@ -7,6 +7,7 @@ from enums.transaction_type import TransactionType
 class UserRepository:
     def __init__(self, conn):
         self.conn = conn
+        conn.execute('PRAGMA foreign_keys = ON')
 
     def create_table(self) -> None:
         sql_query(self.conn, '''
@@ -40,5 +41,5 @@ class UserRepository:
 
     def delete_user(self, user_id: int) -> None:
         sql_query(self.conn, '''
-                DELETE FROM users WHERE id = ?
-            ''', (user_id,))
+                    DELETE FROM users WHERE id = ?
+                ''', (user_id,))

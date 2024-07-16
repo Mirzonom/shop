@@ -9,7 +9,9 @@ from repositories.order_repository import OrderRepository
 
 def initialize_database() -> None:
     conn = sqlite3.connect('shop.db')
+    conn.execute('PRAGMA foreign_keys = ON')
     try:
+
         user_repo = UserRepository(conn)
         user_repo.create_table()
 
@@ -25,6 +27,8 @@ def initialize_database() -> None:
 
         order_repo = OrderRepository(conn)
         order_repo.create_table()
+
+        # user_repo.delete_user(user_id=2)
 
         # categories = ['Блокноты', 'Ручки', 'Карандаши', 'Пеналы', 'Линейки']
         # for category in categories:
@@ -45,7 +49,7 @@ def initialize_database() -> None:
         #     ('Pilot ручка', 7.49, 2, 18),
         #     ('Lamy ручка', 29.99, 2, 5),
         #     ('Faber-Castell карандаш', 1.99, 3, 12),
-        #     ('Prismacolor карандаш', 1.79, 3, 0),
+        #     ('Prismacolor карандаш', 1.79, 3, 10),
         #     ('Koh-I-Noor карандаш', 2.49, 3, 7),
         #     ('Derwent пенал', 14.99, 4, 6),
         #     ('Easthill пенал', 10.99, 4, 9),
@@ -67,8 +71,10 @@ def initialize_database() -> None:
         # for product in products:
         #     name, price, category_id, stock = product
         #     if not product_repo.find_by_name(name):
-        #         product_id = product_repo.create_product(name, price, category_id, stock)
-        #         transaction_repo.add_product_quantity_transaction(product_id, stock, 1)
+        #         product_id = product_repo.create_product(
+        #             name, price, category_id, stock)
+        #         transaction_repo.add_product_quantity_transaction(
+        #             product_id, stock, 1)
 
     finally:
         close_database(conn)
@@ -76,3 +82,7 @@ def initialize_database() -> None:
 
 def close_database(conn) -> None:
     conn.close()
+
+
+def set_foreign_keys(self):
+    self.conn.execute("PRAGMA FOREIGN_KEYS = ON")
